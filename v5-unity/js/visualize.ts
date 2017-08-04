@@ -710,7 +710,7 @@ $(document).ready(function() {
       .append(cExamplesHtml)
       .append(cppExamplesHtml);
   }
-  $("#footer").append(footerHtml);
+  //$("#footer").append(footerHtml);
 
 
   var optFrontend = new OptFrontendWithTestcases(params);

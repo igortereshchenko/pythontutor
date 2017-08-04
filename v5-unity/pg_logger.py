@@ -55,8 +55,8 @@ import pg_encoder
 #MAX_EXECUTED_LINES = 300
 MAX_EXECUTED_LINES = 1000 # on 2016-05-01, I increased the limit from 300 to 1000 for Python due to popular user demand! and I also improved the warning message
 
-#DEBUG = False
-DEBUG = True
+DEBUG = False
+#DEBUG = True
 
 BREAKPOINT_STR = '#break'
 
@@ -1545,6 +1545,41 @@ def exec_script_str(script_str, raw_input_lst_json, options_json, finalizer_func
     pass
   finally:
     logger.finalize()
+
+
+# correction with input parameters
+def exec_script_str_igor(script_str, raw_input_lst_json, options_json, finalizer_func):
+  if options_json:
+      options = json.loads(options_json)
+  else:
+      # defaults
+      options = {'cumulative_mode': False,
+                 'heap_primitives': False, 'show_only_outputs': False}
+
+  py_crazy_mode = ('py_crazy_mode' in options and options['py_crazy_mode'])
+
+  logger = PGLogger(options['cumulative_mode'], options['heap_primitives'], options['show_only_outputs'],
+                    finalizer_func,
+                    crazy_mode=py_crazy_mode)
+
+  # TODO: refactor these NOT to be globals
+  global input_string_queue
+  input_string_queue = []
+  if raw_input_lst_json:
+      # TODO: if we want to support unicode, remove str() cast
+    input_string_queue =[ raw_input_lst_json[str(i)] for i in range(len(raw_input_lst_json))]
+
+  global __html__, __css__, __js__
+  __html__, __css__, __js__ = None, None, None
+
+  try:
+      logger._runscript(script_str)
+  except bdb.BdbQuit:
+      pass
+  finally:
+      logger.finalize()
+
+
 
 
 # disables security check and returns the result of finalizer_func

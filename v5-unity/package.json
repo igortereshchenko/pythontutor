@@ -17,5 +17,8 @@
     "style-loader": "",
     "ts-loader": "",
     "url-loader": ""
+  },
+  "devDependencies": {
+    "webpack": "^2.1.0-beta.22"
   }
 }
